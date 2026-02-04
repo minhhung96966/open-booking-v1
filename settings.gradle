@@ -1,0 +1,9 @@
+rootProject.name = 'open-booking'
+
+include 'common'
+include 'user-service'
+include 'catalog-service'
+include 'inventory-service'
+include 'booking-service'
+include 'payment-service'
+include 'notification-service'

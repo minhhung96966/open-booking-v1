@@ -1,0 +1,79 @@
+_format_version: "3.0"
+
+services:
+  - name: user-service
+    url: http://host.docker.internal:8081
+    routes:
+      - name: user-service-route
+        paths:
+          - /api/v1/users
+        strip_path: false
+
+  - name: catalog-service
+    url: http://host.docker.internal:8082
+    routes:
+      - name: catalog-service-route
+        paths:
+          - /api/v1/catalog
+        strip_path: false
+
+  - name: inventory-service
+    url: http://host.docker.internal:8083
+    routes:
+      - name: inventory-service-route
+        paths:
+          - /api/v1/inventory
+        strip_path: false
+
+  - name: booking-service
+    url: http://host.docker.internal:8084
+    routes:
+      - name: booking-service-route
+        paths:
+          - /api/v1/bookings
+        strip_path: false
+
+  - name: payment-service
+    url: http://host.docker.internal:8085
+    routes:
+      - name: payment-service-route
+        paths:
+          - /api/v1/payments
+        strip_path: false
+
+  - name: notification-service
+    url: http://host.docker.internal:8086
+    routes:
+      - name: notification-service-route
+        paths:
+          - /api/v1/notifications
+        strip_path: false
+
+# Rate Limiting Plugin (example - apply to specific routes)
+plugins:
+  - name: rate-limiting
+    service: booking-service
+    config:
+      minute: 100
+      hour: 1000
+      policy: local
+
+# CORS Plugin (example - apply globally)
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - Authorization

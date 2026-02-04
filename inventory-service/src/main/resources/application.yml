@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/inventory_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: 8083
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+redisson:
+  config: |
+    singleServerConfig:
+      address: "redis://localhost:6379"
+      connectionPoolSize: 10
+      connectionMinimumIdleSize: 5
+
+# Reservation Strategy Configuration
+# Available strategies: distributed, pessimistic, optimistic
+inventory:
+  reservation:
+    strategy: distributed  # distributed | pessimistic | optimistic
+
+logging:
+  level:
+    com.openbooking: DEBUG
+    org.springframework.web: INFO
