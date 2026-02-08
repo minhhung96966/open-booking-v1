@@ -39,6 +39,14 @@ management:
     sampling:
       probability: 1.0
 
+# Saga recovery: advance bookings stuck in RESERVE_SENT / PAYMENT_SENT
+booking:
+  saga:
+    recovery-enabled: true          # Set false to disable recovery job
+    recovery-threshold-minutes: 10  # Start retrying when stuck at least this long
+    recovery-give-up-minutes: 1440  # After this long still stuck: give up (FAILED + release). Default 24h
+    recovery-interval-ms: 300000   # Run job every 5 min (fixedDelay after previous run)
+
 # Feign Clients
 feign:
   client:

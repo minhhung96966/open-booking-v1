@@ -55,6 +55,10 @@ public class Booking {
     @Column(name = "payment_id")
     private Long paymentId;
 
+    /** Saga progress for recovery: RESERVE_SENT, RESERVE_OK, PAYMENT_SENT, PAYMENT_OK, CONFIRMED, FAILED */
+    @Column(name = "saga_step", length = 30)
+    private String sagaStep;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 

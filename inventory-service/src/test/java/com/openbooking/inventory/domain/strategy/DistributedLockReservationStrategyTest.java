@@ -65,6 +65,7 @@ class DistributedLockReservationStrategyTest {
         // Redisson lock behavior
         given(redissonClient.getLock(anyString())).willReturn(lock);
         given(lock.tryLock(anyLong(), anyLong(), any())).willReturn(true);
+        given(lock.isHeldByCurrentThread()).willReturn(true); // so finally block calls unlock()
 
         // Atomic update succeeds (1 row updated)
         given(repository.decreaseAvailabilityAtomically(eq(roomId), eq(checkIn), eq(quantity)))
@@ -92,8 +93,8 @@ class DistributedLockReservationStrategyTest {
         assertThat(response.totalPrice()).isEqualByComparingTo(BigDecimal.valueOf(200));
         assertThat(response.status()).isEqualTo("RESERVED");
 
-        verify(repository).decreaseAvailabilityAtomically(roomId, checkIn, quantity);
-        verify(repository).findByRoomIdAndAvailabilityDate(roomId, checkIn);
+        verify(repository).decreaseAvailabilityAtomically(eq(roomId), eq(checkIn), eq(quantity));
+        verify(repository).findByRoomIdAndAvailabilityDate(eq(roomId), eq(checkIn));
         verify(lock).unlock();
     }
 
@@ -115,6 +116,7 @@ class DistributedLockReservationStrategyTest {
 
         given(redissonClient.getLock(anyString())).willReturn(lock);
         given(lock.tryLock(anyLong(), anyLong(), any())).willReturn(true);
+        given(lock.isHeldByCurrentThread()).willReturn(true);
 
         // Atomic update fails (0 rows updated -> not enough availability)
         given(repository.decreaseAvailabilityAtomically(eq(roomId), eq(checkIn), eq(quantity)))
@@ -127,7 +129,7 @@ class DistributedLockReservationStrategyTest {
                 .extracting("errorCode")
                 .isEqualTo("INSUFFICIENT_AVAILABILITY");
 
-        verify(repository).decreaseAvailabilityAtomically(roomId, checkIn, quantity);
+        verify(repository).decreaseAvailabilityAtomically(eq(roomId), eq(checkIn), eq(quantity));
         verify(lock).unlock();
     }
 }

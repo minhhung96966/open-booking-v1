@@ -37,19 +37,31 @@ public class InventoryController {
     }
 
     /**
+     * Confirm reservation (remove holds so expiry job does not release). Call after payment success.
+     */
+    @PostMapping("/reservations/confirm")
+    public ResponseEntity<BaseResponse<Void>> confirmReservation(@RequestParam Long bookingId) {
+        reservationService.confirmReservation(bookingId);
+        return ResponseEntity.ok(BaseResponse.success(null));
+    }
+
+    /**
      * Release reserved rooms (used for Saga compensating transaction).
+     * If bookingId is provided, also removes holds for that booking.
      */
     @PostMapping("/release")
     public ResponseEntity<BaseResponse<Void>> releaseRoom(
             @RequestParam Long roomId,
             @RequestParam String checkInDate,
             @RequestParam String checkOutDate,
-            @RequestParam Integer quantity) {
+            @RequestParam Integer quantity,
+            @RequestParam(required = false) Long bookingId) {
         reservationService.releaseRoom(
                 roomId,
                 java.time.LocalDate.parse(checkInDate),
                 java.time.LocalDate.parse(checkOutDate),
-                quantity);
+                quantity,
+                bookingId);
         return ResponseEntity.ok(BaseResponse.success(null));
     }
 }

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 /**
  * Request DTO for reserving a room.
+ * @param idempotencyKey Optional. If set, duplicate requests with same key return cached response (no double reserve).
  */
 public record ReserveRoomRequest(
         @NotNull(message = "Room ID cannot be null")
@@ -20,6 +21,12 @@ public record ReserveRoomRequest(
 
         @Positive(message = "Quantity must be positive")
         @NotNull(message = "Quantity cannot be null")
-        Integer quantity
+        Integer quantity,
+
+        /** Idempotency key (e.g. "booking-123"). When provided, same key returns cached result. */
+        String idempotencyKey
 ) {
+    public ReserveRoomRequest(Long roomId, LocalDate checkInDate, LocalDate checkOutDate, Integer quantity) {
+        this(roomId, checkInDate, checkOutDate, quantity, null);
+    }
 }

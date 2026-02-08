@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ public class BookingService {
                 .checkInDate(request.checkInDate())
                 .checkOutDate(request.checkOutDate())
                 .quantity(request.quantity())
+                .totalPrice(BigDecimal.ZERO) // Updated after reserve
                 .status(Booking.BookingStatus.PENDING)
                 .build();
 

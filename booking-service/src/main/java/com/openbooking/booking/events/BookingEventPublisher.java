@@ -35,6 +35,13 @@ public class BookingEventPublisher {
      * This triggers async processing in other services (notifications, analytics).
      */
     public void publishBookingConfirmed(Booking booking) {
+        publishBookingConfirmed(booking, false);
+    }
+
+    /**
+     * @param recoveryConfirmed true when confirmed by recovery job (user may have seen error; notify so they can cancel duplicate if they booked elsewhere).
+     */
+    public void publishBookingConfirmed(Booking booking, boolean recoveryConfirmed) {
         BookingConfirmedEvent event = BookingConfirmedEvent.builder()
                 .bookingId(booking.getId())
                 .userId(booking.getUserId())
@@ -44,6 +51,7 @@ public class BookingEventPublisher {
                 .totalPrice(booking.getTotalPrice())
                 .status(booking.getStatus().name())
                 .timestamp(java.time.Instant.now())
+                .recoveryConfirmed(recoveryConfirmed)
                 .build();
 
         publishEvent(TOPIC_BOOKING_CONFIRMED, String.valueOf(booking.getId()), event);

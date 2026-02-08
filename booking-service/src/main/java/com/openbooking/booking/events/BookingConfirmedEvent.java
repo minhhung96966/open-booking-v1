@@ -26,4 +26,6 @@ public class BookingConfirmedEvent {
     private BigDecimal totalPrice;
     private String status;
     private Instant timestamp;
+    /** True when confirmed by recovery job (user may have seen error earlier). Notification can advise to cancel duplicate if they booked elsewhere. */
+    private boolean recoveryConfirmed;
 }

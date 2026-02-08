@@ -18,10 +18,14 @@ public interface InventoryClient {
     @PostMapping("/reserve")
     ReserveRoomResponse reserveRoom(@RequestBody ReserveRoomRequest request);
 
+    @PostMapping("/reservations/confirm")
+    void confirmReservation(@org.springframework.web.bind.annotation.RequestParam Long bookingId);
+
     @PostMapping("/release")
     void releaseRoom(
             @org.springframework.web.bind.annotation.RequestParam Long roomId,
             @org.springframework.web.bind.annotation.RequestParam String checkInDate,
             @org.springframework.web.bind.annotation.RequestParam String checkOutDate,
-            @org.springframework.web.bind.annotation.RequestParam Integer quantity);
+            @org.springframework.web.bind.annotation.RequestParam Integer quantity,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Long bookingId);
 }

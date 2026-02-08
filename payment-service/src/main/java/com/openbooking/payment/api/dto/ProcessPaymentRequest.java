@@ -17,6 +17,9 @@ public record ProcessPaymentRequest(
         BigDecimal amount,
 
         @NotNull(message = "Payment method cannot be null")
-        String paymentMethod
+        String paymentMethod,
+
+        /** Idempotency key (e.g. "booking-123"). Duplicate key returns cached response. */
+        String idempotencyKey
 ) {
 }

@@ -6,6 +6,10 @@ public record ReserveRoomRequest(
         Long roomId,
         LocalDate checkInDate,
         LocalDate checkOutDate,
-        Integer quantity
+        Integer quantity,
+        String idempotencyKey
 ) {
+    public ReserveRoomRequest(Long roomId, LocalDate checkInDate, LocalDate checkOutDate, Integer quantity) {
+        this(roomId, checkInDate, checkOutDate, quantity, null);
+    }
 }

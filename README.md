@@ -15,6 +15,8 @@ OpenBooking is a comprehensive hotel booking platform that showcases:
 
 ## 🏗️ Architecture
 
+📐 **Detailed sequence & flow diagrams:** [docs/architecture-diagrams.md](docs/architecture-diagrams.md) (Booking Saga, Inventory atomic update, CQRS, high-level services)
+
 ### Service Breakdown
 
 1. **user-service** (Port 8081): User profile management, Keycloak integration
@@ -124,7 +126,7 @@ try {
 
 - Java 17+
 - Docker & Docker Compose
-- Gradle 8.5+
+- **Gradle Wrapper** (included): use `./gradlew` (Linux/macOS) or `gradlew.bat` (Windows). No need to install Gradle. If the wrapper fails with "Could not find or load main class GradleWrapperMain", the wrapper JAR may be missing — see [gradle/wrapper/README-WRAPPER.md](gradle/wrapper/README-WRAPPER.md) to generate or download it.
 
 ### Local Development Setup
 

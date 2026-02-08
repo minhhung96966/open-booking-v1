@@ -34,6 +34,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<BaseResponse<?>> handleServiceUnavailable(ServiceUnavailableException ex) {
+        log.warn("Service unavailable: {}", ex.getMessage());
+        BaseResponse<?> response = BaseResponse.error(ex.getMessage(), "SERVICE_UNAVAILABLE");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<Map<String, String>>> handleValidationException(
             MethodArgumentNotValidException ex) {

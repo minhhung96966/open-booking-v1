@@ -1,15 +1,14 @@
 package com.openbooking.inventory.domain.repository;
 
-import com.openbooking.inventory.InventoryServiceApplication;
 import com.openbooking.inventory.domain.model.RoomAvailability;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,18 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration test for {@link RoomAvailabilityRepository} focusing on the
  * atomic UPDATE used by the \"distributed\" reservation strategy.
  *
- * We use Testcontainers with a real PostgreSQL instance to:
- * - Run Flyway migrations
- * - Verify the SQL-level atomic behavior of decreaseAvailabilityAtomically(...)
- *
- * Even though this test runs sequentially, the SQL guard
- * (available_count >= :quantity) ensures correctness under high concurrency as well.
+ * Uses @DataJpaTest so only JPA/Repository layer is loaded (no Redis/Redisson).
+ * Testcontainers provides a real PostgreSQL instance.
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = InventoryServiceApplication.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@EntityScan("com.openbooking.inventory.domain.model")
 @Testcontainers
-@ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class RoomAvailabilityRepositoryIntegrationTest {
 
     @Container
@@ -43,11 +37,12 @@ class RoomAvailabilityRepositoryIntegrationTest {
             .withUsername("postgres")
             .withPassword("postgres");
 
-    static {
-        POSTGRES.start();
-        System.setProperty("spring.datasource.url", POSTGRES.getJdbcUrl());
-        System.setProperty("spring.datasource.username", POSTGRES.getUsername());
-        System.setProperty("spring.datasource.password", POSTGRES.getPassword());
+    @DynamicPropertySource
+    static void configureDatasource(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES::getUsername);
+        registry.add("spring.datasource.password", POSTGRES::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create"); // create table (no Flyway in @DataJpaTest)
     }
 
     @Autowired

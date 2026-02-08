@@ -59,6 +59,10 @@ redisson:
 inventory:
   reservation:
     strategy: distributed  # distributed | pessimistic | optimistic
+    hold-ttl-minutes: 15  # Reserve TTL; expired holds released by scheduled job
+    expiry-job-interval-ms: 60000  # Run expiry job every 1 minute
+    # Idempotency: DB is source of truth (same tx as reserve). Redis is optional cache (read first, warm after write).
+    idempotency-redis-cache: true  # Set false to use DB only
 
 logging:
   level:
